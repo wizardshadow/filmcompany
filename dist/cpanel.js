@@ -2,10 +2,20 @@
   const $ = id => document.getElementById(id);
   let csrf = '', fields = {}, values = {}, revision = null, selected = null, dirty = false;
   async function api(path, options = {}) {
-    const response = await fetch('/api/cms/' + path, {
-      ...options, headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf, ...options.headers }
-    });
-    const result = await response.json();
+    const targets = ['/api/cms/' + path, '/api/cms.php?path=' + encodeURIComponent(path)];
+    let response, result;
+    for (let i = 0; i < targets.length; i++) {
+      response = await fetch(targets[i], {
+        ...options, headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf, ...options.headers }
+      });
+      const type = response.headers.get('content-type') || '';
+      if (!type.includes('json')) {
+        if (i < targets.length - 1) continue;
+        throw new Error('Сервер админки недоступен');
+      }
+      result = await response.json();
+      break;
+    }
     if (!response.ok) throw new Error(result.error || 'Ошибка запроса');
     return result;
   }
