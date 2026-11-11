@@ -26,10 +26,18 @@
       const id = element.dataset.cms, field = fields[id];
       if (!field) return;
       const value = values[id] ?? field.value;
-      if (field.type === 'text') element.textContent = value;
+      if (field.type === 'text') {
+        if (element.textContent !== value) element.textContent = value;
+      }
       else {
+        if (element.getAttribute(field.attribute) === value) return;
         element.setAttribute(field.attribute, value);
-        if (element.tagName === 'VIDEO') { element.pause(); element.removeAttribute('src'); element.load(); }
+        if (element.tagName === 'VIDEO') {
+          element.pause();
+          element.src = value;
+          element.load();
+          if (element.getBoundingClientRect().top < innerHeight) element.play().catch(() => {});
+        }
         if (element.tagName === 'IMG') {
           element.classList.remove('image-reveal-pending'); element.style.visibility = 'visible';
           document.querySelectorAll('.image-reveal-canvas').forEach(canvas => canvas.remove());
