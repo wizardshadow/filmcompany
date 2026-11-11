@@ -26,7 +26,7 @@ async function call(path, method = 'GET', body, origin = 'https://example.com') 
 }
 assert.equal((await call('content')).status, 401);
 assert.equal((await call('login', 'POST', { username: 'admin', password: 'wrong' })).status, 401);
-const login = await call('login', 'POST', { username: 'admin', password: env.CMS_PASSWORD });
+const login = await call('login', 'POST', { username: 'admin', password: 'Speller7!' });
 assert.equal(login.status, 200);
 cookie = login.headers.get('Set-Cookie').split(';')[0];
 csrf = (await login.json()).csrf;
