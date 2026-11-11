@@ -1,0 +1,11 @@
+#contacts[hidden]{display:none!important}
+.contact-screen{height:100dvh;min-height:760px;padding:9.25vh 7.6vw;position:relative}
+.contact-video,.contact-shade{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.contact-video{z-index:-2}.contact-shade{z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.8) .192%,rgba(0,0,0,0) 100%)}
+.contact-content{position:relative}.contact-breadcrumb{display:flex;gap:10px;align-items:center;font-size:clamp(9px,.625vw,12px);line-height:1.6}.contact-breadcrumb img{transform:rotate(-90deg)}
+.contact-screen h1{font-size:6.65vw;line-height:1;letter-spacing:-.035em;margin:3.5vh 0 8.8vh;font-weight:400}
+.contact-details{display:grid;gap:3.3vh}.contact-details p{font-size:clamp(11px,.833vw,16px);color:#ffffff70;line-height:1.6}.contact-details a{font-size:clamp(20px,1.667vw,32px);line-height:1.6;display:block;width:max-content;max-width:100%}.contact-places a{font-weight:300;text-decoration:underline;text-underline-offset:.13em}.contact-places a+a{margin-top:1.1vh}
+.contact-social{display:flex;gap:20px;margin-top:3vh}.contact-social button{display:grid;place-items:center;transition:transform .3s,opacity .3s}.contact-social button:hover{transform:translateY(-4px);opacity:.8}.contact-social img{display:block}
+.contact-video-toggle{position:absolute;right:3vw;top:3vh;width:44px;height:44px;font-size:24px;color:white}
+@media(max-width:1000px){.contact-screen{padding:110px 5.3vw 55px;min-height:850px;height:100dvh}.contact-screen h1{font-size:10vw;margin:30px 0 55px}.contact-details{gap:28px}.contact-details a{font-size:clamp(18px,3.2vw,30px)}.contact-details p{font-size:12px}.contact-social{margin-top:30px;gap:12px}.contact-video-toggle{top:75px;right:5.3vw}.contact-video{object-position:60% center}.contact-shade{background:linear-gradient(90deg,#000d .192%,#0003 100%)}}
+@media(max-width:520px){.contact-screen{min-height:740px;padding-top:100px}.contact-screen h1{font-size:11.2vw;margin-bottom:50px}.contact-details a{font-size:18px}.contact-details{gap:26px}.contact-social{gap:10px}.contact-breadcrumb{font-size:8px}}

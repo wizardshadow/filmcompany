@@ -1,0 +1,3 @@
+#home .hero-float-layer{translate:var(--float-x,0px) var(--float-y,0px);will-change:translate}
+@media(prefers-reduced-motion:reduce){#home .hero-float-layer{translate:none;will-change:auto}}
+.hero-picture video{display:block;width:100%;height:100%;object-fit:cover}

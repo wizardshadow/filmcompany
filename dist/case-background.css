@@ -1,0 +1,5 @@
+#cases .case-backdrop .case-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:none;opacity:0;z-index:0;transition:opacity 650ms ease;pointer-events:none}
+#cases .case-backdrop .case-film.is-active{opacity:.75;z-index:2}
+#cases .case-backdrop .case-film.is-outgoing{opacity:.75;z-index:1}
+#cases .case-backdrop:after{z-index:3;pointer-events:none}
+@media(prefers-reduced-motion:reduce){#cases .case-backdrop .case-film{transition:none}}

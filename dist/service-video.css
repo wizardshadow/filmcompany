@@ -1,0 +1,7 @@
+.service video{display:block;width:100%;height:calc(100% - 26px);min-height:0;object-fit:cover;transition:filter .2s}
+
+
+@media(prefers-reduced-motion:reduce){.services-track.moving video{filter:none}.service video{transition:none}}
+
+
+.service video{filter:brightness(.75);transition:filter .3s ease}.service.is-video-active video{filter:brightness(1)}

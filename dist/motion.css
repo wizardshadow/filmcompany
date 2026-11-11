@@ -1,0 +1,31 @@
+/* Loading is opt-in so content remains usable when JavaScript is unavailable. */
+html.is-loading .rail,html.is-loading #scroller{opacity:0;pointer-events:none}
+.rail,#scroller{transition:opacity 850ms cubic-bezier(.22,1,.36,1)}
+html.is-loading #scroller{overflow:hidden}
+.preloader{position:fixed;inset:0;background:#000;z-index:1000;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:28px;transition:opacity 650ms ease,visibility 650ms;color:#fff}
+.preloader.is-complete{opacity:0;visibility:hidden;pointer-events:none}
+.loader-mark{font-size:clamp(15px,2vw,28px);letter-spacing:.06em;display:flex;align-items:center;gap:15px}
+.rec-dot{width:8px;height:8px;border-radius:50%;background:#ff3b30;box-shadow:0 0 12px #ff3b3044;flex:none}
+.loader-mark .rec-dot{animation:record-pulse 1.2s ease-in-out infinite}
+.loader-progress{height:1px;width:min(280px,65vw);background:#292929;overflow:hidden}
+.loader-progress>span{display:block;height:100%;width:100%;background:#ffb900;transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.loader-status{font-size:10px;letter-spacing:.12em;color:#aaa}
+.rec-cursor{position:fixed;left:0;top:0;width:8px;height:8px;overflow:visible;white-space:nowrap;z-index:1100;pointer-events:none;display:none;align-items:center;gap:7px;font:11px Unbounded,Arial,sans-serif;letter-spacing:.04em;color:#fff;will-change:transform;opacity:0;transition:opacity .2s}
+.rec-cursor.is-visible{opacity:1}.rec-cursor.is-hovered{color:#ffb900}.rec-cursor.is-hovered .rec-dot{box-shadow:0 0 0 5px #ff3b3020}.rec-cursor .rec-dot{transition:box-shadow .25s}
+@media(hover:hover) and (pointer:fine){html.has-rec-cursor,html.has-rec-cursor a,html.has-rec-cursor button{cursor:none}.has-rec-cursor input,.has-rec-cursor textarea{cursor:text}.rec-cursor{display:flex}}
+@keyframes record-pulse{50%{opacity:.3}}
+#scroller{scroll-behavior:auto;scroll-snap-type:none}
+.screen{scroll-snap-align:none;scroll-snap-stop:normal}
+.reveal{translate:none;transition:opacity .7s ease;transition-delay:var(--delay,0ms)}
+.text-reveal,.text-reveal.reveal{opacity:1;translate:none}
+/* Paragraph indentation applies once, never inside each animated word. */
+motion-word{display:inline-block;vertical-align:baseline;overflow:clip;overflow-clip-margin:.12em;line-height:inherit;text-indent:0;white-space:nowrap}
+/* The tight hero leading needs extra ink space for uppercase diacritics. */
+.hero h1 motion-word{overflow-clip-margin:.35em}
+motion-ink{display:inline-block;text-indent:0;transform:translateY(115%);opacity:0;transition:transform var(--line-duration,700ms) cubic-bezier(.22,1,.36,1),opacity .4s;transition-delay:var(--line-delay,0ms);will-change:transform}
+.text-reveal.is-revealed motion-ink{transform:translateY(0);opacity:1}
+.image-reveal-canvas{position:absolute;pointer-events:none;z-index:0;background:#000}
+.image-reveal-pending{visibility:hidden!important;translate:none!important}
+.hero h1{z-index:2}.process article h2{z-index:1}.case-card span{z-index:2}
+.hero-picture.reveal{opacity:1;translate:none}.case-backdrop img{transition:none}
+@media(prefers-reduced-motion:reduce){.rail,#scroller,.preloader{transition:none}.loader-mark .rec-dot{animation:none}.rec-cursor{display:none!important}motion-ink{opacity:1;transform:none;transition:none}.reveal{opacity:1}.image-reveal-pending{visibility:visible!important}.image-reveal-canvas{display:none}}

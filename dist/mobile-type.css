@@ -1,0 +1,30 @@
+@media(max-width:1000px){
+.origin-copy p{font-size:14px}
+.journey-notes p,.journey-outro{font-size:14px}
+.field-error{font-size:14px}
+.brief-attachments small{font-size:14px}
+.brief-form-status{font-size:14px}
+.success-preview-note{font-size:14px}
+
+.brief-work-previews span{font-size:14px}
+.loader-status{font-size:14px}
+.brief #form-status{font-size:14px}
+.brand{font-size:14px}
+.hero-intro{font-size:14px}
+.about-grid p,.mission-copy,.awards-bottom p{font-size:14px}
+.process p{font-size:14px}
+.menu-contact{font-size:14px}
+.toast{font-size:14px}
+}
+
+/* Keep the mobile CTA below the copy, including Android font scaling. */
+@media(max-width:1000px){
+ #home.hero{height:auto;min-height:100svh;display:flex;flex-direction:column;padding:clamp(100px,16svh,180px) 0 48px}
+ #home.hero h1{position:relative;inset:auto;order:0;width:89.4%;margin:0 auto;flex:none}
+ #home .hero-picture{position:relative;inset:auto;order:1;width:100%;height:auto;aspect-ratio:1.76;margin:-6px 0 0;flex:none}
+ #home .hero-picture video{position:absolute;inset:0}
+ #home .hero-intro{position:relative;inset:auto;order:2;width:80%;margin:32px 5.3% 0 auto;font-size:14px;line-height:1.4;overflow-wrap:break-word}
+ #home .hero-bottom{position:relative;inset:auto;order:3;width:80%;margin:28px 5.3% 0 auto;display:flex;align-items:flex-start}
+ #home .hero-bottom .cut-button{max-width:100%;flex:none}
+ #home .hero-intro.hero-float-layer,#home .hero-bottom .hero-float-layer{translate:none;will-change:auto}
+}
