@@ -78,6 +78,80 @@ function valid_value(string $id, mixed $value, array $fields): bool {
     return (bool) preg_match('#^https://#', $value);
 }
 
+function public_index(): string {
+    return dirname(__DIR__) . '/index.html';
+}
+
+function template_html(): string {
+    $path = data_dir() . '/index.template.html';
+    if (!is_file($path)) {
+        $current = file_get_contents(public_index());
+        if ($current === false || $current === '') respond(['error' => 'Не удалось прочитать страницу сайта'], 500);
+        if (file_put_contents($path, $current) === false) respond(['error' => 'Не удалось выполнить запрос. Повторите попытку.'], 500);
+    }
+    $html = file_get_contents($path);
+    if ($html === false || $html === '') respond(['error' => 'Не удалось прочитать страницу сайта'], 500);
+    return $html;
+}
+
+function apply_field(string $html, string $id, array $field, string $value): string {
+    $count = 0;
+    $quotedId = preg_quote($id, '/');
+    if (($field['type'] ?? '') === 'text') {
+        $safe = htmlspecialchars($value, ENT_NOQUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $updated = preg_replace_callback(
+            '/(<cms-text\b[^>]*\bdata-cms="' . $quotedId . '"[^>]*>)(.*?)(<\/cms-text>)/s',
+            static function (array $match) use ($safe): string {
+                return $match[1] . $safe . $match[3];
+            },
+            $html,
+            1,
+            $count
+        );
+    } else {
+        $attribute = (string) ($field['attribute'] ?? 'src');
+        if (!preg_match('/^[A-Za-z_:][A-Za-z0-9_:.-]*$/', $attribute)) {
+            respond(['error' => 'Не найдено поле на странице'], 500);
+        }
+        $safe = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $updated = preg_replace_callback(
+            '/<[^>]*\bdata-cms="' . $quotedId . '"[^>]*>/',
+            static function (array $match) use ($attribute, $safe): string {
+                $tag = $match[0];
+                $attrCount = 0;
+                $replaced = preg_replace(
+                    '/(?<![\w-])' . preg_quote($attribute, '/') . '="[^"]*"/',
+                    $attribute . '="' . $safe . '"',
+                    $tag,
+                    1,
+                    $attrCount
+                );
+                if ($attrCount === 1 && is_string($replaced)) return $replaced;
+                return substr($tag, 0, -1) . ' ' . $attribute . '="' . $safe . '">';
+            },
+            $html,
+            1,
+            $count
+        );
+    }
+    if (!is_string($updated) || $count !== 1) respond(['error' => 'Не найдено поле на странице'], 500);
+    return $updated;
+}
+
+function publish_html(array $values, array $fields): void {
+    $html = template_html();
+    foreach ($values as $id => $value) {
+        if (!is_string($id) || !isset($fields[$id]) || !is_string($value)) continue;
+        $html = apply_field($html, $id, $fields[$id], $value);
+    }
+    $target = public_index();
+    $tmp = $target . '.cms.tmp';
+    if (file_put_contents($tmp, $html) === false || !rename($tmp, $target)) {
+        if (is_file($tmp)) unlink($tmp);
+        respond(['error' => 'Не удалось записать страницу сайта'], 500);
+    }
+}
+
 $path = (string) ($_GET['path'] ?? '');
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if (!origin_ok()) respond(['error' => 'Недопустимый источник запроса'], 403);
@@ -133,7 +207,10 @@ if ($path === 'content' && $method === 'PUT') {
     $body = json_decode($raw, true);
     $values = is_array($body) ? ($body['values'] ?? null) : null;
     $known = fields();
-    if (!is_array($values) || array_is_list($values)) respond(['error' => 'Проверьте значения полей'], 400);
+    if (!is_array($values) || (array_is_list($values) && count($values) > 0)) {
+        respond(['error' => 'Проверьте значения полей'], 400);
+    }
+    if (array_is_list($values)) $values = [];
     foreach ($values as $id => $value) {
         if (!is_string($id) || !valid_value($id, $value, $known)) respond(['error' => 'Проверьте значения полей'], 400);
     }
@@ -146,6 +223,7 @@ if ($path === 'content' && $method === 'PUT') {
     } elseif ($current) {
         respond(['error' => 'Контент уже изменён в другой вкладке. Обновите редактор перед сохранением.'], 409);
     }
+    publish_html($values, $known);
     $etag = bin2hex(random_bytes(16));
     write_json_file(content_file(), ['values' => $values, 'revision' => $etag]);
     respond(['revision' => $etag]);
