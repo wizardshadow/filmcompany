@@ -2,20 +2,26 @@
   const $ = id => document.getElementById(id);
   let csrf = '', fields = {}, values = {}, revision = null, selected = null, dirty = false;
   async function api(path, options = {}) {
-    const targets = ['/api/cms/' + path, '/api/cms.php?path=' + encodeURIComponent(path)];
-    let response, result;
-    for (let i = 0; i < targets.length; i++) {
-      response = await fetch(targets[i], {
-        ...options, headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf, ...options.headers }
-      });
-      const type = response.headers.get('content-type') || '';
-      if (!type.includes('json')) {
-        if (i < targets.length - 1) continue;
-        throw new Error('Сервер админки недоступен');
+    const method = String(options.method || 'GET').toUpperCase();
+    const headers = { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf, ...options.headers };
+    const php = { url: '/api/cms.php?path=' + encodeURIComponent(path), method: method === 'PUT' ? 'POST' : method };
+    const worker = { url: '/api/cms/' + path, method };
+    const attempts = method === 'GET' ? [worker, php] : [php, worker];
+    let response, result, lastError;
+    for (const attempt of attempts) {
+      try {
+        response = await fetch(attempt.url, { ...options, method: attempt.method, headers });
+      } catch (error) {
+        lastError = error;
+        response = null;
+        continue;
       }
+      const type = response.headers.get('content-type') || '';
+      if (!type.includes('json')) { response = null; continue; }
       result = await response.json();
       break;
     }
+    if (!response) throw lastError || new Error('Сервер админки недоступен');
     if (!response.ok) throw new Error(result.error || 'Ошибка запроса');
     return result;
   }
@@ -84,7 +90,7 @@
     $('publish').disabled = true;
     const snapshot = JSON.stringify(values);
     try {
-      const result = await api('content', { method: 'PUT', body: JSON.stringify({ values, revision }) });
+      const result = await api('content', { method: 'POST', body: JSON.stringify({ values, revision }) });
       revision = result.revision; setDirty(snapshot !== JSON.stringify(values)); message('');
     } catch (error) { message(error.message); $('publish').disabled = false; }
   };

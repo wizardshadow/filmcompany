@@ -201,7 +201,7 @@ if ($path === 'content' && $method === 'GET') {
         'fields' => fields(),
     ]);
 }
-if ($path === 'content' && $method === 'PUT') {
+if ($path === 'content' && ($method === 'PUT' || $method === 'POST')) {
     $raw = (string) file_get_contents('php://input');
     if (strlen($raw) > 1000000) respond(['error' => 'Слишком большой запрос'], 413);
     $body = json_decode($raw, true);
